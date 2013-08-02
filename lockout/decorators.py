@@ -38,6 +38,13 @@ def enforce_lockout(function):
         if settings.USE_USER_AGENT:
             useragent = request.META.get('HTTP_USER_AGENT', '')
             params.append(useragent)
+
+        if settings.WITH_USERNAME:
+            try:
+                username = kwargs.get('username') or args[0]
+            except IndexError:
+                raise ValueError("No username in parameters, but LOCKOUT_WITH_USERNAME specified")
+            params.append(username)
         
         key = generate_base_key(*params)
         attempts = cache.get(key) or 0
