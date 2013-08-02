@@ -33,7 +33,7 @@ def generate_base_key(*params):
 
 ########################################################################
 
-def reset_attempts(request):
+def reset_attempts(request, *args, **kwargs):
     """Clears the cache key for the specified ``request``.
     """
     params = []
@@ -47,6 +47,13 @@ def reset_attempts(request):
     if settings.USE_USER_AGENT:
         useragent = request.META.get('HTTP_USER_AGENT', '')
         params.append(useragent)
+
+    if settings.WITH_USERNAME:
+        try:
+            username = kwargs.get('username') or args[0]
+        except IndexError:
+            raise ValueError("No username in parameters, but LOCKOUT_WITH_USERNAME specified")
+        params.append(username)
         
     key = generate_base_key(*params)
     cache.delete(key)
