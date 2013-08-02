@@ -42,9 +42,10 @@ def enforce_lockout(function):
         if settings.WITH_USERNAME:
             try:
                 username = kwargs.get('username') or args[0]
+                params.append(username)
             except IndexError:
-                raise ValueError("No username in parameters, but LOCKOUT_WITH_USERNAME specified")
-            params.append(username)
+                pass
+                #raise ValueError("No username in parameters, but LOCKOUT_WITH_USERNAME specified")
         
         key = generate_base_key(*params)
         attempts = cache.get(key) or 0
